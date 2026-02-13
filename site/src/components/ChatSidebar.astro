@@ -1,0 +1,13 @@
+---
+/**
+ * ChatSidebar.astro
+ *
+ * Astro wrapper that renders the React ChatPanel as a client-side island.
+ * Injected into every page via Starlight's component override system.
+ */
+import ChatPanel from './ChatPanel';
+---
+
+<div id="obn-chat-root">
+  <ChatPanel client:idle />
+</div>

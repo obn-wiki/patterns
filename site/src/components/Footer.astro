@@ -1,0 +1,13 @@
+---
+/**
+ * Footer.astro
+ *
+ * Custom Starlight Footer override that adds the OBN AI chat sidebar.
+ * Wraps the default Starlight footer and appends the ChatSidebar island.
+ */
+import StarlightFooter from '@astrojs/starlight/components/Footer.astro';
+import ChatSidebar from './ChatSidebar.astro';
+---
+
+<StarlightFooter {...Astro.props}><slot /></StarlightFooter>
+<ChatSidebar />

@@ -1,0 +1,26 @@
+{
+  "name": "obn-wiki",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "OBN — OpenClaw Builder Network docs site",
+  "scripts": {
+    "prepare-content": "tsx scripts/prepare-content.ts",
+    "dev": "npm run prepare-content && astro dev",
+    "build": "npm run prepare-content && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/starlight": "^0.37.6",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "astro": "^5.6.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "sharp": "^0.34.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
+}

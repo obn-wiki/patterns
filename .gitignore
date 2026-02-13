@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Build output
+site/dist/
+site/.astro/
+
+# Generated content (built by prepare-content.ts from patterns/)
+site/src/content/docs/patterns/
+site/src/content/docs/stacks/
+site/src/content/docs/reference/
+site/src/content/docs/contributing.md
+site/public/pattern-index.json
+
+# Environment
+.env
+.env.local
+.env.production
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

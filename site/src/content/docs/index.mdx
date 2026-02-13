@@ -1,0 +1,102 @@
+---
+title: OBN — OpenClaw Builder Network
+description: Vetted patterns for running OpenClaw agents in production.
+template: splash
+hero:
+  tagline: The missing manual for production OpenClaw agents. 33 tested patterns across security, memory, operations, and more — with copy-paste configs, documented failure modes, and reproducible test harnesses.
+  actions:
+    - text: Get Started
+      link: /getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: Browse Patterns
+      link: /patterns/security/prompt-injection-defense/
+      icon: open-book
+    - text: GitHub
+      link: https://github.com/obn-wiki/obn-wiki
+      icon: github
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Pattern Categories
+
+<CardGrid>
+  <Card title="Security (7)" icon="warning">
+    Prompt injection defense, secret management, tool policy lockdown, gateway hardening, system guardrails, skill vetting, two-agent architecture.
+
+    [Browse Security &rarr;](/patterns/security/prompt-injection-defense/)
+  </Card>
+  <Card title="Operations (5)" icon="setting">
+    Heartbeat design, overnight execution, cost optimization, health monitoring, cheap model coordination.
+
+    [Browse Operations &rarr;](/patterns/operations/heartbeat-checklist-design/)
+  </Card>
+  <Card title="Memory (5)" icon="document">
+    Pre-compaction flush, secret-free hygiene, log rotation, search tuning, multi-agent isolation.
+
+    [Browse Memory &rarr;](/patterns/memory/pre-compaction-memory-flush/)
+  </Card>
+  <Card title="Soul (4)" icon="star">
+    Production boundaries, drift prevention, multi-channel tone, graceful uncertainty.
+
+    [Browse Soul &rarr;](/patterns/soul/production-boundary-hardening/)
+  </Card>
+  <Card title="Context (3)" icon="list-format">
+    Window budgeting, workspace injection control, compaction strategy for 24/7 agents.
+
+    [Browse Context &rarr;](/patterns/context/window-budget-management/)
+  </Card>
+  <Card title="Gateway (3)" icon="rocket">
+    Production deployment, multi-channel routing, remote access via Tailscale.
+
+    [Browse Gateway &rarr;](/patterns/gateway/production-gateway-deployment/)
+  </Card>
+  <Card title="Tools (3)" icon="puzzle">
+    TOOLS.md organization, rate limiting, dangerous command prevention.
+
+    [Browse Tools &rarr;](/patterns/tools/tools-md-organization/)
+  </Card>
+  <Card title="Agents (3)" icon="laptop">
+    Startup sequence, workspace isolation, graceful degradation on missing files.
+
+    [Browse Agents &rarr;](/patterns/agents/startup-sequence-optimization/)
+  </Card>
+</CardGrid>
+
+## Start Here
+
+New to production OpenClaw? Pick your pain point:
+
+<CardGrid>
+  <Card title="I need security NOW" icon="warning">
+    1. [Gateway Hardening](/patterns/security/gateway-hardening/) — lock down the network
+    2. [Tool Policy Lockdown](/patterns/security/tool-policy-lockdown/) — least-privilege access
+    3. [Prompt Injection Defense](/patterns/security/prompt-injection-defense/) — authority model
+    4. [Native Guardrails](/patterns/security/native-guardrails-integration/) — layer with system defenses
+  </Card>
+  <Card title="My agent loses context" icon="document">
+    1. [Pre-Compaction Flush](/patterns/memory/pre-compaction-memory-flush/) — save state before compaction
+    2. [Compaction Strategy](/patterns/context/compaction-strategy-for-24-7-agents/) — optimize when and how
+    3. [Window Budget](/patterns/context/window-budget-management/) — allocate tokens wisely
+  </Card>
+  <Card title="This costs too much" icon="setting">
+    1. [Cheap Model Coordinator](/patterns/operations/cheap-model-coordinator/) — biggest savings (70-80%)
+    2. [Cost Optimization](/patterns/operations/cost-optimization-strategies/) — 7 strategies ranked
+    3. [Heartbeat Design](/patterns/operations/heartbeat-checklist-design/) — stop wasting on checks
+  </Card>
+</CardGrid>
+
+## How It Works
+
+Every pattern follows the same structure:
+
+1. **Problem** — what this solves (have you experienced this?)
+2. **Context** — when to use / when NOT to use
+3. **Implementation** — copy-paste `SOUL.md`, `openclaw.json`, `HEARTBEAT.md` configs
+4. **Failure Modes** — what can still go wrong + mitigations
+5. **Test Harness** — bash script to validate your setup
+6. **Evidence** — real metrics from production use
+
+Patterns are tested against **OpenClaw v2026.2+**. Check the [Version Matrix](/reference/version-matrix/) for compatibility.

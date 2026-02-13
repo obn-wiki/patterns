@@ -1,0 +1,49 @@
+[Unit]
+Description=OpenClaw Gateway
+Documentation=https://docs.openclaw.ai
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=openclaw
+Group=openclaw
+WorkingDirectory=/home/openclaw/.openclaw
+
+# Main process
+ExecStart=/usr/local/bin/openclaw gateway start
+
+# Environment
+EnvironmentFile=/home/openclaw/.openclaw/env
+Environment=NODE_ENV=production
+
+# Restart policy: always restart, wait 10s between restarts
+Restart=always
+RestartSec=10
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+# Security hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/openclaw/.openclaw
+PrivateTmp=yes
+
+# Resource limits
+LimitNOFILE=4096
+MemoryMax=2G
+CPUQuota=80%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=openclaw-gateway
+
+# Graceful shutdown (30s timeout)
+TimeoutStopSec=30
+KillMode=mixed
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target
