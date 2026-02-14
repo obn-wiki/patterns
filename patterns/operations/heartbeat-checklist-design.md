@@ -1,6 +1,6 @@
 # Pattern: Heartbeat Checklist Design
 
-> **Category:** Operations | **Status:** Tested | **OpenClaw Version:** 0.40+ | **Last Validated:** 2026-02-12
+> **Category:** Operations | **Status:** Tested | **OpenClaw Version:** 0.40+ (cron scheduler hardened on 2026.2.12+) | **Last Validated:** 2026-02-14
 
 ## Problem
 
@@ -110,6 +110,20 @@ curl -fsS -m 10 --retry 5 https://hc-ping.com/your-uuid-here
 ```
 
 If the ping doesn't arrive within the expected interval, the external service alerts you. This catches the case where the agent itself has crashed and can't send heartbeats.
+
+### v2026.2.12 Cron Scheduler Improvements
+
+v2026.2.12 includes 12+ fixes to the cron scheduler that directly impact heartbeat reliability:
+
+- **No more skipped jobs:** `nextRunAtMs` advancing no longer causes job skipping
+- **No more duplicate fires:** Simultaneous trigger prevention eliminates double-heartbeats
+- **Isolated errors:** One failing cron job no longer breaks all other jobs — if your heartbeat job errors, your other scheduled tasks still run
+- **Correct `agentId` for isolated jobs:** Auth resolution now uses the requested `agentId`, fixing permission errors in multi-agent setups
+- **Timer re-arm:** Timers correctly re-arm when `onTimer` fires during job execution
+- **`deleteAfterRun` honored on skipped jobs:** One-shot `at` jobs no longer re-fire after skip/error
+- **Model override preserved:** Stored session model overrides (e.g., `hooks.gmail.model`) are honored for isolated agent runs
+
+**Impact on heartbeat design:** If you previously added workarounds for missed heartbeats (shorter intervals, redundant checks), you can now relax them. The scheduler is significantly more reliable. See the [Cron Reliability Hardening](cron-reliability-hardening.md) pattern for cron-specific configuration.
 
 ## Failure Modes
 

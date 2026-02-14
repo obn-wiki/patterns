@@ -1,8 +1,8 @@
 # Pattern: Gateway Hardening
 
-> **Category:** Security | **Status:** Tested | **OpenClaw Version:** 0.40+ (TLS 1.3 minimum on 2026.2.1+) | **Last Validated:** 2026-02-13
+> **Category:** Security | **Status:** Tested | **OpenClaw Version:** 0.40+ (TLS 1.3 on 2026.2.1+, SSRF deny + loopback auth on 2026.2.12+) | **Last Validated:** 2026-02-14
 
-> **Known ecosystem issues this addresses:** SecurityScorecard found 40,000+ exposed OpenClaw deployments. An unsecured gateway allows anyone to send messages to your agent, impersonate you, access your files, and exfiltrate data. v2026.2.1 added TLS 1.3 minimum, but network-level hardening (bind address, firewall, Tailscale) is still your responsibility.
+> **Known ecosystem issues this addresses:** SecurityScorecard found 40,000+ exposed OpenClaw deployments. An unsecured gateway allows anyone to send messages to your agent, impersonate you, access your files, and exfiltrate data. v2026.2.1 added TLS 1.3 minimum. v2026.2.12 adds SSRF deny policy, mandatory loopback browser auth, and drain-before-restart. Network-level hardening (bind address, firewall, Tailscale) is still your responsibility.
 
 ## Problem
 
@@ -171,6 +171,53 @@ This adds HTTPS encryption + HTTP basic auth in front of the gateway. Tailscale 
 - If any issue: alert immediately
 ```
 
+### v2026.2.12 Enhancements
+
+**SSRF Deny Policy (new):** The gateway now enforces an explicit SSRF deny policy for `input_file` and `input_image` URL parameters. Configure hostname allowlists to restrict which external URLs the agent can fetch:
+
+```json
+{
+  "gateway": {
+    "files": {
+      "urlAllowlist": ["trusted-cdn.example.com", "storage.googleapis.com"]
+    },
+    "images": {
+      "urlAllowlist": ["i.imgur.com", "cdn.example.com"]
+    }
+  }
+}
+```
+
+Blocked fetch attempts are now audit-logged. See the [SSRF Defense](ssrf-defense.md) pattern for full configuration.
+
+**Mandatory Loopback Browser Auth (new):** Loopback browser control (previously linked to one-click RCE and token leaks) now requires authentication. If no credentials are set, OpenClaw auto-generates a `gateway.auth.token` on startup. You no longer need to manually set this — but verify it's working:
+
+```bash
+# Check that auto-generated token exists
+openclaw config get gateway.auth.token
+# Should return a non-empty value
+```
+
+**Drain-Before-Restart (new):** The gateway now drains active turns before restart to prevent message loss. This means graceful restarts no longer drop in-flight conversations. Combined with the `EPIPE` suppression fix, launchd/systemd restarts are now clean.
+
+**High-Risk Tool Blocking (new):** High-risk tools are blocked from HTTP `/tools/invoke` by default. Override with `gateway.tools.allow` / `gateway.tools.deny` if you need specific tools exposed via HTTP.
+
+### Updated Security Checklist
+
+```markdown
+- [ ] Gateway binds to 127.0.0.1 (or Tailscale IP), NOT 0.0.0.0
+- [ ] OPENCLAW_GATEWAY_TOKEN is set and strong (32+ random hex chars)
+- [ ] Firewall blocks port 18789 from public internet
+- [ ] If using Tailscale: ACLs restrict which devices can connect
+- [ ] If NOT using Tailscale: TLS reverse proxy with auth in front
+- [ ] Gateway token is in env file (600 permissions), not in config files
+- [ ] Auto-approve disabled for non-loopback connections
+- [ ] Logging enabled for all connection attempts
+- [ ] (v2026.2.12+) SSRF urlAllowlist configured for files and images
+- [ ] (v2026.2.12+) Loopback browser auth token verified
+- [ ] (v2026.2.12+) High-risk tools blocked from /tools/invoke
+```
+
 ## Failure Modes
 
 | Failure | Cause | Mitigation |
@@ -180,6 +227,9 @@ This adds HTTPS encryption + HTTP basic auth in front of the gateway. Tailscale 
 | Tailscale disconnects, gateway becomes unreachable | Tailscale daemon crashes or key expires | systemd dependency: openclaw-gateway.service requires tailscaled. Tailscale key auto-refresh. HEARTBEAT.md checks Tailscale status. |
 | Brute force token guessing | Attacker tries many tokens | Rate limit connection attempts (OpenClaw auto-rate-limits by default). Token is 32+ hex chars (256 bits of entropy — infeasible to brute force). |
 | Unauthorized device on Tailscale network | Compromised Tailscale key or shared network | Use ACLs to restrict to specific tagged devices. Don't use shared Tailscale networks for OpenClaw. |
+| SSRF via input_file/input_image | Attacker crafts URL pointing to internal network (169.254.x.x, localhost) | v2026.2.12 SSRF deny policy blocks internal IPs by default. Configure `urlAllowlist` for external domains. Blocked fetches are audit-logged. |
+| Message loss during restart | Gateway restarts while conversation is in-flight | v2026.2.12 drain-before-restart waits for active turns to complete. Verify with `openclaw gateway status` before manual restarts. |
+| Loopback browser control exploited | Browser control endpoint accessible without auth | v2026.2.12 makes loopback auth mandatory. Auto-generates token if none set. Verify with `openclaw config get gateway.auth.token`. |
 
 ## Test Harness
 

@@ -1,8 +1,8 @@
 # Pattern: Secret Management
 
-> **Category:** Security | **Status:** Tested | **OpenClaw Version:** 0.40+ | **Last Validated:** 2026-02-13
+> **Category:** Security | **Status:** Tested | **OpenClaw Version:** 0.40+ (config redaction fixes on 2026.2.12+) | **Last Validated:** 2026-02-14
 
-> **Known ecosystem issues this addresses:** ~7% of ClawHub skills mishandle secrets (Snyk audit). Workspace files (MEMORY.md, daily logs) are plaintext and often backed up, synced, or version-controlled — any credential written to them is exposed. Prompt injection attacks frequently target credential exfiltration.
+> **Known ecosystem issues this addresses:** ~7% of ClawHub skills mishandle secrets (Snyk audit). Workspace files (MEMORY.md, daily logs) are plaintext and often backed up, synced, or version-controlled — any credential written to them is exposed. Prompt injection attacks frequently target credential exfiltration. v2026.2.12 fixes config redaction (no longer accidentally redacts `maxTokens`-like fields) and moves Twilio voice stream auth from query string to `<Parameter>` element.
 
 ## Problem
 
@@ -146,6 +146,16 @@ env
 memory/
 *.log
 ```
+
+### v2026.2.12 Secret Handling Improvements
+
+**Config redaction fix:** Previous versions could accidentally redact `maxTokens`-like fields during config snapshot redaction (because they matched secret-like patterns). v2026.2.12 fixes this — config snapshots now correctly distinguish between numeric configuration values and actual secrets. This means round-trip config validation no longer breaks.
+
+**Twilio auth token moved:** Twilio voice stream auth tokens are now passed via `<Parameter>` elements instead of query strings. Previously, tokens appeared in URL query parameters, which meant they could leak into server logs, browser history, and referrer headers. This fix applies to Twilio voice integrations specifically.
+
+**Credential redaction from config responses:** Config API responses now redact credentials before sending, preventing accidental exposure through the control UI or API. If you built monitoring dashboards that read config, you'll no longer see plaintext secrets in responses.
+
+**Constant-time secret comparison:** Webhook and device token verification now uses constant-time comparison, preventing timing attacks that could leak token values byte-by-byte.
 
 ## Failure Modes
 

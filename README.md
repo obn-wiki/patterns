@@ -74,6 +74,7 @@ Patterns target different minimum OpenClaw versions. Check which patterns apply 
 | **2026.2.1+** | [Native Guardrails Integration](patterns/security/native-guardrails-integration.md), [Prompt Injection Defense](patterns/security/prompt-injection-defense.md) (updated) | **System Guardrails** added — native prompt injection defense at the system prompt level. TLS 1.3 minimum for gateway. Session injection support. All security patterns should layer on top of guardrails when available. |
 | **2026.2.3+** | [Heartbeat Checklist Design](patterns/operations/heartbeat-checklist-design.md) | **Announce delivery mode** for isolated cron. Heartbeat `accountId` routing for multi-user setups. |
 | **2026.2.6+** | [Skill/Plugin Security Vetting](patterns/security/skill-plugin-security-vetting.md), [Cost Optimization](patterns/operations/cost-optimization-strategies.md) (updated), [Cheap Model Coordinator](patterns/operations/cheap-model-coordinator.md) | **Safety scanner** for skills/plugins. VirusTotal integration (SHA-256 fingerprinting, daily rescans). Opus 4.6 + GPT-5.3-Codex support. Web UI token dashboard. Session history caps and billing clarity. |
+| **2026.2.12+** | [SSRF Defense](patterns/security/ssrf-defense.md), [Cron Reliability](patterns/operations/cron-reliability-hardening.md), [Hook Security](patterns/security/hook-security.md), [Gateway Hardening](patterns/security/gateway-hardening.md) (updated), [Prompt Injection Defense](patterns/security/prompt-injection-defense.md) (updated), [Heartbeat Checklist](patterns/operations/heartbeat-checklist-design.md) (updated), [Skill/Plugin Security](patterns/security/skill-plugin-security-vetting.md) (updated), [Secret Management](patterns/security/secret-management.md) (updated) | **40+ security fixes.** SSRF deny policy + hostname allowlists. Hook `sessionKey` override rejected by default. Browser content untrusted-by-default with transcript stripping. Loopback browser auth mandatory. Cron scheduler overhaul (12+ fixes). Skill sync confined to `skills/` root. Config redaction fixes. |
 | **Multi-version** | [Two-Agent Untrusted Content](patterns/security/two-agent-untrusted-content.md) | Works on any version with multi-agent support (0.40+). Benefits from System Guardrails on 2026.2.1+. |
 
 > **Upgrade note:** If you're on 0.40 and upgrading to 2026.2.1+, enable System Guardrails first (`agents.defaults.guardrails.enabled: true`), then review the [Native Guardrails Integration](patterns/security/native-guardrails-integration.md) pattern to understand how your existing SOUL.md rules compose with the new native defenses.
@@ -87,8 +88,8 @@ Patterns target different minimum OpenClaw versions. Check which patterns apply 
 | [Memory](patterns/memory/) | 5 | Persistent state, compaction, vector search, daily logs |
 | [Context](patterns/context/) | 3 | Window management, file injection, compaction strategy |
 | [Tools](patterns/tools/) | 3 | TOOLS.md config, batching, rate limiting |
-| [Security](patterns/security/) | 7 | Prompt injection, data isolation, secret management, guardrails, skill vetting, two-agent architecture |
-| [Operations](patterns/operations/) | 5 | Heartbeat, cron, overnight execution, cost optimization, model coordination |
+| [Security](patterns/security/) | 9 | Prompt injection, data isolation, secret management, guardrails, skill vetting, two-agent architecture, SSRF defense, hook security |
+| [Operations](patterns/operations/) | 6 | Heartbeat, cron, overnight execution, cost optimization, model coordination, cron reliability |
 | [Gateway](patterns/gateway/) | 3 | Multi-channel, session management, remote access |
 
 ## Quick Start
